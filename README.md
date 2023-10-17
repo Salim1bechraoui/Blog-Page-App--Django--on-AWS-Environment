@@ -186,7 +186,7 @@ You can now launch an EC2 instance using the Launch Template:
 
 aws ec2 run# instances # # launch# template LaunchTemplateName=<Template_Name>,Version=1
 
-Step 11: Create certification for secure connection: 
+# Step 11: Create certification for secure connection: 
 
 
 To create a certificate for secure connections (typically for SSL/TLS encryption) in AWS, you can use the AWS Certificate Manager. Here are the steps to create a certificate:
