@@ -100,45 +100,45 @@ After configuring your settings, you'll need to collect static and media files t
 python manage.py collectstatic
 python manage.py migrate
 
-Step 9: Create NAT Instance in Public Subnet
+# Step 9: Create NAT Instance in Public Subnet
 
 aws ec2 run# instances \
- # image# id <NAT_Instance_AMI_ID> \
- # instance# type <Instance_Type> \
- # key# name <Key_Pair_Name> \
- # subnet# id <Public_Subnet_ID> \
- # associate# public# ip# address
+  image# id <NAT_Instance_AMI_ID> \
+  instance# type <Instance_Type> \
+  key# name <Key_Pair_Name> \
+  subnet# id <Public_Subnet_ID> \
+  associate# public# ip# address
 
 You'll need to create a security group for your NAT instance that allows outbound traffic (e.g., all ports) and inbound traffic for responses. Here's an example using the AWS CLI:
 
 aws ec2 create# security# group \
- # group# name NATSecurityGroup \
- # description "NAT Security Group" \
- # vpc# id <VPC_ID>
+  group# name NATSecurityGroup \
+  description "NAT Security Group" \
+ vpc# id <VPC_ID>
 
 aws ec2 authorize# security# group# ingress \
- # group# id <NAT_Security_Group_ID> \
- # protocol # 1 \
- # source# group <NAT_Security_Group_ID>
+  group# id <NAT_Security_Group_ID> \
+  protocol # 1 \
+  source# group <NAT_Security_Group_ID>
 
 By default, source/destination checking is enabled on EC2 instances. You should disable it for your NAT instance:
 
 aws ec2 modify# instance# attribute \
- # instance# id <NAT_Instance_ID> \
- # no# source# dest# check
+ instance# id <NAT_Instance_ID> \
+ no# source# dest# check
 
 The next step is to update the route tables to route internet# bound traffic through the NAT instance. This will require updating the route table associated with your private subnets.
 
 aws ec2 create# route \
- # route# table# id <Private_Route_Table_ID> \
- # destination# cidr# block 0.0.0.0/0 \
- # instance# id <NAT_Instance_ID>
+ route# table# id <Private_Route_Table_ID> \
+ destination# cidr# block 0.0.0.0/0 \
+ instance# id <NAT_Instance_ID>
 
 #  Step10: Create Launch Template and IAM role for it 
   
   aws iam create# role \
- # role# name <Role_Name> \
- # assume# role# policy# document file://role# policy.json
+  role# name <Role_Name> \
+  assume# role# policy# document file://role# policy.json
 
 Create a JSON policy document that defines what services the role can access and the permissions. For example:
  check s3policy.json
@@ -146,21 +146,21 @@ Create a JSON policy document that defines what services the role can access and
 Attach policies to the role based on the permissions your instances need. For instance, if your instances need access to S3 and DynamoDB, you can attach the appropriate policies:
 
 aws iam attach# role# policy \
- # role# name <Role_Name> \
- # policy# arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+  role# name <Role_Name> \
+  policy# arn arn:aws:iam::aws:policy/AmazonS3FullAccess
 
 aws iam attach# role# policy \
- # role# name <Role_Name> \
- # policy# arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+  role# name <Role_Name> \
+  policy# arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
 
 Creating a Launch Template:
 
 Use the AWS CLI to create a Launch Template with the IAM role you just created: 
 
 aws ec2 create# launch# template \
- # launch# template# name <Template_Name> \
- # version# description <Template_Version_Description> \
-# launch# template# data file://launch# template.json
+  launch# template# name <Template_Name> \
+  version# description <Template_Version_Description> \
+  launch# template# data file://launch# template.json
 
 Create a JSON file that specifies the configuration details for your EC2 instances, including the IAM role. An example might look like this
 
