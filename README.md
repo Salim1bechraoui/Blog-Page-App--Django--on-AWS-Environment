@@ -326,4 +326,201 @@ Review your configuration settings.
 Click "Create Auto Scaling group" to create the Auto Scaling group with the specified settings.
 The Auto Scaling group will now use the Launch Template you configured to launch and manage instances. Scaling policies will automatically adjust the number of instances in the group based on your defined scaling thresholds and criteria.
 
+#Step15: Create Cloudfront in front of ALB 
 
+reating an Amazon CloudFront Distribution:
+
+Log in to the AWS Management Console.
+
+Navigate to Amazon CloudFront:
+
+In the AWS Management Console, search for "CloudFront" or locate it under the "Networking & Content Delivery" section.
+Create a Distribution:
+
+Click the "Create Distribution" button.
+Select a Web Distribution:
+
+Choose "Web" as the type of distribution you want to create.
+Configure Origin Settings:
+
+In the "Origin Domain Name" field, specify the DNS name of your Application Load Balancer (ALB).
+Set "Origin Path" if your application's content resides in a specific subdirectory.
+Choose "HTTP" or "HTTPS" as the Origin Protocol Policy depending on your ALB configuration.
+Configure other settings as needed, such as the "Origin ID."
+Configure Default Cache Behavior Settings:
+
+You can leave most settings as default. However, you can configure caching settings, viewer protocol policy (e.g., "Redirect HTTP to HTTPS"), and any additional behaviors.
+Set Viewer Protocol Policy:
+
+Choose how you want CloudFront to communicate with viewers. You can select "Redirect HTTP to HTTPS" for secure connections.
+Configure Distribution Settings:
+
+Specify the price class and any other settings based on your requirements.
+Configure SSL Certificate:
+
+Choose an SSL/TLS certificate for secure connections. You can use a certificate from AWS Certificate Manager if you created one earlier.
+Configure Default Root Object:
+
+Set the default root object for your distribution, usually something like "index.html."
+Add Alternate Domain Names (CNAMEs):
+
+If you want to use a custom domain name, add the CNAMEs (e.g., "www.yourdomain.com"). You'll need to configure your DNS to point to CloudFront.
+Configure Custom Error Responses (optional):
+
+Customize error responses for specific HTTP error codes.
+Set up Restrictions and WAF (optional):
+
+If you want to restrict access to your content, configure access control settings and use AWS Web Application Firewall (WAF) if needed.
+Review and Create:
+
+Review your settings and click "Create Distribution" to create your CloudFront distribution.
+
+#Step 15: Create Route 53 with Failover settings
+
+Creating a Route 53 Configuration with Failover:
+
+Log in to the AWS Management Console.
+
+Navigate to Amazon Route 53:
+
+In the AWS Management Console, search for "Route 53" or locate it under the "Networking & Content Delivery" section.
+Create a Hosted Zone (if not already created):
+
+In Route 53, choose "Hosted zones" from the left navigation pane.
+Click the "Create hosted zone" button.
+Enter your domain name (e.g., example.com).
+Choose the "Public hosted zone" option.
+Click "Create hosted zone."
+Create Records:
+
+Inside your hosted zone, create DNS records for your primary application and secondary (failover) resources. This may include an "A" record for your primary Application Load Balancer (ALB) and another "A" record for the secondary resource (e.g., a static S3 website or an S3 maintenance page). These records will define the resources for the primary and secondary traffic destinations.
+Configure Health Checks:
+
+Create health checks to monitor the availability of your primary resources. In the Route 53 console, go to "Health checks" and create a new health check. Configure the health check to monitor the primary resource, like your ALB's endpoint.
+Create a Failover Record Set:
+
+Inside your hosted zone, create a new record set with the "Failover" routing policy. Configure the "Failover Primary" as your primary ALB and "Failover Secondary" as your secondary resource.
+Configure Failover Record Set:
+
+Configure the "Failover Record Set" with routing policies and set the health checks:
+For "Failover Record Set," select "Primary" for the "Failover Record Type."
+Set the routing policies for the primary resource, such as "Simple Routing."
+Configure the health check to monitor the primary resource's health. The failover will occur when the primary resource fails the health check.
+Add Routing Policies:
+
+Configure other routing policies for your record sets based on your application requirements. For example, you can have "Latency-Based Routing" record sets for different geographic regions.
+Review and Create:
+
+Review your settings and create the record sets.
+Update DNS Configuration:
+
+Once the records are created and the failover configurations are in place, you need to update your DNS configuration. Route 53 will provide you with DNS name servers that you should use for your domain name.
+Update the DNS settings with your domain registrar to point to the Route 53 name servers. This will make Route 53 responsible for routing traffic to your primary and secondary resources based on health checks and failover settings.
+
+#Step 16: Create DynamoDB Table
+
+
+Creating a DynamoDB Table:
+
+Log in to the AWS Management Console.
+
+Navigate to Amazon DynamoDB:
+
+In the AWS Management Console, search for "DynamoDB" or locate it under the "Databases" section.
+Create a Table:
+
+In the DynamoDB dashboard, click the "Create table" button.
+Configure Table Details:
+
+Provide a name for your DynamoDB table.
+Define the primary key for your table. This consists of a partition key (the most common primary key) and an optional sort key.
+Configure the settings for your primary key, such as data type.
+Provisioned or On-Demand Capacity Mode:
+
+Choose whether to use provisioned or on-demand capacity mode. Provisioned mode allows you to specify the read and write capacity units, while on-demand mode automatically scales based on usage.
+Additional Settings:
+
+Configure additional settings such as global secondary indexes, local secondary indexes, and streams based on your application requirements.
+Create Table:
+
+Review your configuration settings.
+Click "Create" to create the DynamoDB table.
+ 
+# Step17-18: create Lambda function 
+
+Creating a Lambda Function:
+
+Log in to the AWS Management Console.
+
+Navigate to AWS Lambda:
+
+In the AWS Management Console, search for "Lambda" or locate it under the "Compute" section.
+Create a Function:
+
+In the Lambda dashboard, click the "Create function" button.
+Choose Author from Scratch:
+
+Choose "Author from scratch" as the function blueprint.
+Configure Basic Function Settings:
+
+Provide a name for your Lambda function.
+Choose a runtime for your function. Python 3.8 is mentioned in your project details.
+Set the execution role for your function. This role should have permissions to access the necessary AWS services, such as S3 and DynamoDB. You can create a new role with the required policies or use an existing one.
+Create the Function:
+
+Click the "Create function" button.
+Add Code:
+
+In the function details, scroll down to the "Function code" section.
+You can either write your code directly in the code editor or upload a .zip file if your code is more complex.
+Use the developer's notes or the code you received to write the Lambda function code.
+Configure Environment Variables:
+
+If your function requires environment variables, configure them in the "Configuration" tab. For example, you may need to set the DynamoDB table name, S3 bucket name, or other parameters.
+Configure Triggers:
+
+You mentioned that the Lambda function should be triggered by an S3 event. Click "Add trigger" and select S3 as the trigger source.
+Configure the S3 bucket and event type that should trigger the Lambda function.
+Set Up Function Execution Timeout:
+
+In the "Basic settings" section, set the function execution timeout to an appropriate value based on your function's runtime and expected processing time.
+Review and Save:
+
+Review your function configuration.
+Click the "Save" button.
+Test the Function:
+
+You can test your function using sample test events or create custom test events to simulate the S3 event trigger.
+
+# Step 17-18: Create S3 Event and set it as trigger for Lambda Function 
+
+Creating an S3 Event Trigger for Lambda:
+
+Log in to the AWS Management Console.
+
+Navigate to Amazon S3:
+
+In the AWS Management Console, search for "S3" or locate it under the "Storage" section.
+Create or Select an S3 Bucket:
+
+Either create a new S3 bucket or select an existing bucket where you want to trigger the Lambda function based on S3 events.
+Configure Event Notification:
+
+Inside the selected S3 bucket, go to the "Properties" tab.
+In the "Event notifications" section, click "Create event notification."
+Name and Events:
+
+Provide a name for the event notification configuration.
+Under "Events," select the specific S3 events that should trigger the Lambda function. These events can include object creation, deletion, etc.
+Destination:
+
+Choose "Lambda function" as the destination for the event.
+Function and Filter:
+
+Select the Lambda function you want to trigger from the drop-down menu.
+You can optionally configure a filter for the events, which allows you to filter based on object key patterns. If you don't want to filter, you can leave this section empty.
+Create Event:
+
+Review your configuration settings.
+Click the "Create" or "Save" button to create the event notification.
+The S3 event is now set up to trigger the Lambda function when the specified S3 events occur within the selected S3 bucket. Whenever an object is created, deleted, or matches your filter criteria, the Lambda function will be automatically invoked to process the event.
